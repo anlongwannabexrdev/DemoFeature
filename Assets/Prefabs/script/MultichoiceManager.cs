@@ -7,7 +7,7 @@ public class MultichoiceManager : MonoBehaviour
     public class Question
     {
         public TextMeshProUGUI questionText;
-        public TextMeshProUGUI[] options;
+        public GameObject[] options;
         public int correctIndex;
     }
 
@@ -16,33 +16,57 @@ public class MultichoiceManager : MonoBehaviour
 
     public TextMeshProUGUI resultTextMesh;
 
+    private bool isAnswering = true;
+
+    public void Start()
+    {
+        Debug.Log("Start game");
+        ShowQuestion();
+    }
+
     public void SelectAnswer(int selectedIndex)
     {
+        Debug.Log("Called");
+        if (!isAnswering) return;
+
         var q = questions[currentQuestionIndex];
 
         if (selectedIndex == q.correctIndex)
+        {
             resultTextMesh.text = "<color=green>Correct!</color>";
+            isAnswering = false;
+            Invoke(nameof(NextQuestion), 1f);
+        }
         else
-            resultTextMesh.text = "color=red>Wrong!</color>";
+        {
+            resultTextMesh.text = "<color=red>Wrong! Try again.</color>";
+        }
+    }
 
+    private void NextQuestion()
+    {
         currentQuestionIndex++;
+        isAnswering = true;
+
         if (currentQuestionIndex < questions.Length)
         {
             ShowQuestion();
         }
         else
         {
-            Debug.Log("Completed all question");
+            resultTextMesh.text = "Completed all questions!";
         }
     }
 
     public void ShowQuestion()
     {
         var q = questions[currentQuestionIndex];
-        Debug.Log("Cau hoi: " + q.questionText);
+        resultTextMesh.text = "";
+
+        Debug.Log("Câu hỏi: " + q.questionText.text);
         for (int i = 0; i < q.options.Length; i++)
         {
-            Debug.Log($"[{i}] {q.options[i]}");
+            Debug.Log($"[{i}] {q.options[i].name}");
         }
     }
 }
